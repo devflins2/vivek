@@ -1,10 +1,10 @@
-// English-only translations for Hinata's Birthday Website
+// English-only translations for Eman's Birthday Website
 // Created for you
 
 const translations = {
     en: {
-        title: "Happy Birthday Hinata 🎁",
-        description: "A special birthday surprise for Hinata! Click to see the special message!",
+        title: "Happy Birthday Eman 🎁",
+        description: "A special birthday surprise for Eman! Click to see the special message!",
         login: "Sign in with Google",
         logout: "Logout",
         settings: "Website Settings",
@@ -27,7 +27,7 @@ const translations = {
         note: "⏳ Enjoy this special birthday website!",
         follow: "💝 This special birthday website was lovingly created for you",
         apply: "Apply Settings",
-        copyright: 'Made with 💕 for Hinata\'s Birthday',
+        copyright: 'Made with 💕 for Eman\'s Birthday',
         fullscreen: "Fullscreen",
         on: "On",
         off: "Off",
@@ -44,7 +44,7 @@ const translations = {
         noteSequence: "Note: Please separate words with | and don't make a line too long",
         noteExpire: "⏳ <b>Note:</b> Enjoy this special birthday surprise! 🎉",
         followNote: "💝 This special birthday website was lovingly created for you",
-        notVietnamWarning: '🎉 Happy Birthday Hinata! Wishing you a wonderful day filled with joy and love! 💕',
+        notVietnamWarning: '🎉 Happy Birthday Eman! Wishing you a wonderful day filled with joy and love! 💕',
         pageTitleCover: "Page {num} (Cover)",
         pageTitle: "Page {num}",
         imageLabel: "Image:",

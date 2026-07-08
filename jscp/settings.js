@@ -335,7 +335,7 @@ function resetWebsiteState() {
 function initializeDefaultSettings() {
 
     window.settings = {
-        music: './music/hinata.mp3',
+        music: './music/eman.mp3',
         countdown: 3,
         matrixText: 'HAPPYBIRTHDAY',
         matrixColor1: '#ff69b4', // Pink color
