@@ -1032,7 +1032,7 @@ function showBook() {
 
         // ✅ FIX: Calculate z-index for all pages
         calculatePageZIndexes();
-        
+
         // ✅ FIX: Set up observer to track book structure changes
         setupPageObserver();
 
@@ -1080,7 +1080,7 @@ const flipSound = new Audio('./music/flip.mp3');
 flipSound.volume = 0.5; // Thodi aawaz kam rakhi hai taaki background music distrub na ho
 function playFlipSound() {
     flipSound.currentTime = 0; // Rapid clicks ke liye aawaz reset
-    flipSound.play().catch(e => {}); // Autoplay error ignore karne ke liye
+    flipSound.play().catch(e => { }); // Autoplay error ignore karne ke liye
 }
 
 function showConfetti() {
@@ -1172,12 +1172,12 @@ function makeElementDraggable(elmnt) {
 
     function dragMouseDown(e) {
         e = e || window.event;
-        if(e.type === 'mousedown') e.preventDefault();
+        if (e.type === 'mousedown') e.preventDefault();
         const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
         const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
         pos3 = clientX;
         pos4 = clientY;
-        
+
         // Drag karte time instant follow kare bina kisi delay ke
         elmnt.style.transition = 'none';
 
@@ -1191,7 +1191,7 @@ function makeElementDraggable(elmnt) {
     function elementDrag(e) {
         e = e || window.event;
         // Mobile par background scroll hone se roke
-        if (e.cancelable) e.preventDefault(); 
+        if (e.cancelable) e.preventDefault();
 
         const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
         const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
@@ -1214,7 +1214,7 @@ function makeElementDraggable(elmnt) {
         document.ontouchend = null;
         document.removeEventListener('touchmove', elementDrag);
         elmnt.style.cursor = 'grab';
-        
+
         // Mouse chhodne par ek smooth "settle/slide" effect
         elmnt.style.transition = 'top 0.4s cubic-bezier(0.25, 1, 0.5, 1), left 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
@@ -1299,7 +1299,7 @@ function spawnHeartPhotosCentered() {
     const totalStaggerTime = maxHeartPhotos * 100;
     const orbitAnimationTime = 1200;
     const delayBeforeForming = 1000; // Wait a bit after the last one appears
-    
+
     setTimeout(() => {
         const isLandscapeMobile = window.innerHeight <= 500 && window.innerWidth > window.innerHeight;
         const scale = isLandscapeMobile ? 8 : 16;
@@ -1340,27 +1340,27 @@ function startBackgroundParticles() {
     if (bgParticlesInterval) return; // Prevent multiple intervals
 
     const colors = ['#ff69b4', '#ff1493', '#ffd700', '#ffffff', '#ffb6c1'];
-    
+
     bgParticlesInterval = setInterval(() => {
         // Ek baar mein 3 particles spawn honge aur interval fast kar diya hai
         for (let i = 0; i < 3; i++) {
             const particle = document.createElement('div');
             particle.className = 'bg-floating-particle';
-            
+
             const size = Math.random() * 6 + 2; // 2px to 8px
             particle.style.width = size + 'px';
             particle.style.height = size + 'px';
             particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             particle.style.boxShadow = `0 0 ${size * 2}px ${particle.style.backgroundColor}`;
-            
+
             particle.style.left = Math.random() * 100 + 'vw';
-            
+
             const duration = Math.random() * 4 + 4; // 4s to 8s
             particle.style.setProperty('--duration', duration + 's');
             particle.style.setProperty('--max-opacity', Math.random() * 0.5 + 0.3); // Soft opacity
-            
+
             document.body.appendChild(particle);
-            
+
             setTimeout(() => {
                 particle.remove();
             }, duration * 1000);
@@ -1701,7 +1701,7 @@ function fadeAudio(audio, targetVolume, duration) {
         if (startTime === null) startTime = currentTime;
         const timeElapsed = currentTime - startTime;
         const progress = Math.min(timeElapsed / duration, 1);
-        
+
         audio.volume = startVolume + (volumeChange * progress);
 
         if (progress < 1) {
@@ -1799,7 +1799,7 @@ function cleanup() {
     if (typewriterTimeout) {
         clearTimeout(typewriterTimeout);
     }
-    
+
     if (zIndexUpdateTimeout) {
         clearTimeout(zIndexUpdateTimeout);
     }
@@ -1814,7 +1814,7 @@ function cleanup() {
     // Reset counters
     heartPhotosCreated = 0;
     starsCreated = false;
-    
+
     // Clear heart container
     const heartCont = document.getElementById('heartPhotoContainer');
     if (heartCont) heartCont.remove();
@@ -1884,36 +1884,36 @@ function initialUserInteractionHandler() {
 let zIndexUpdateTimeout;
 
 function calculatePageZIndexes() {
-    
+
     const book = document.getElementById('book');
     if (!book) {
         console.warn('⚠️ [WARNING] Book element not found');
         return;
     }
-    
+
     const pages = book.querySelectorAll('.page');
     const totalPages = pages.length;
-    
-    
+
+
     if (totalPages === 0) {
         console.warn('⚠️ [WARNING] No pages found in book');
         return;
     }
-    
+
     pages.forEach((page, physicalIndex) => {
         const logicalPageIndex = physicalIndex * 2;
         const nextLogicalPageIndex = logicalPageIndex + 1;
-        
+
         // Calculate z-index for current page
         const normalZIndex = totalPages - physicalIndex;
         const flippedZIndex = physicalIndex + 1;
-        
-        
+
+
         // Apply z-index
         page.style.setProperty('--page-z-index', normalZIndex.toString());
         page.style.setProperty('--page-flipped-z-index', flippedZIndex.toString());
     });
-    
+
 }
 
 function updatePageZIndexes() {
@@ -1929,29 +1929,29 @@ function setupPageObserver() {
         console.warn('⚠️ [WARNING] Book element not found for observer setup');
         return;
     }
-    
+
     const observer = new MutationObserver((mutations) => {
         let shouldUpdate = false;
-        
+
         mutations.forEach((mutation) => {
             if (mutation.type === 'childList') {
                 shouldUpdate = true;
             }
         });
-        
+
         if (shouldUpdate) {
             updatePageZIndexes();
         }
     });
-    
+
     observer.observe(book, {
         childList: true,
         subtree: true
     });
-    
+
 }
 
-window.debugBookImages = function() {
+window.debugBookImages = function () {
     const allImages = document.querySelectorAll('.page img');
     allImages.forEach((img, index) => {
         const pageIndex = img.getAttribute('data-page-index');

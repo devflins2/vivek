@@ -9,12 +9,12 @@ let settings = {
     matrixText: 'HAPPYBIRTHDAY',
     matrixColor1: '#ff69b4', // Pink color
     matrixColor2: '#ff1493', // Pink color
-    sequence: 'HAPPY|BIRTHDAY|TO|YOU|HINATA|❤',
+    sequence: 'HAPPY|BIRTHDAY|TO|YOU|EMAN|❤',
     sequenceColor: '#ff69b4', // Pink color
     gift: '', // No sticker/GIF
     pages: [
         { image: './image/Birthday!/cover.jpg', content: '' }, // Front cover
-        { image: './image/Birthday!/photo1.jpg', content: 'Dear Hinata, you bring so much joy and happiness! 💕' },
+        { image: './image/Birthday!/photo1.jpg', content: 'Dear Eman, you bring so much joy and happiness! 💕' },
         { image: './image/Birthday!/photo2.jpg', content: 'Your smile lights up every room you enter! ✨' },
         { image: './image/Birthday!/photo3.jpg', content: 'You are such an amazing and beautiful person! 🌸' },
         { image: './image/Birthday!/photo4.jpg', content: 'Your kindness and warmth touch hearts! 💖' },
@@ -340,16 +340,16 @@ function initializeDefaultSettings() {
         matrixText: 'HAPPYBIRTHDAY',
         matrixColor1: '#ff69b4', // Pink color
         matrixColor2: '#ff1493', // Pink color
-        sequence: 'HAPPY|BIRTHDAY|TO|YOU|HINATA|❤',
+        sequence: 'HAPPY|BIRTHDAY|TO|YOU|EMAN|❤',
         sequenceColor: '#ff69b4', // Pink color
         gift: '', // No sticker/GIF
         enableBook: true,
         enableHeart: true,
-        isSave: false,  
+        isSave: false,
         colorTheme: 'pink',
         pages: [
             { image: './image/Birthday!/cover.jpg', content: '' }, // Front cover
-            { image: './image/Birthday!/photo1.jpg', content: 'Dear Hinata, you bring so much joy and happiness! 💕' },
+            { image: './image/Birthday!/photo1.jpg', content: 'Dear EMAN, you bring so much joy and happiness! 💕' },
             { image: './image/Birthday!/photo2.jpg', content: 'Your smile lights up every room you enter! ✨' },
             { image: './image/Birthday!/photo3.jpg', content: 'You are such an amazing and beautiful person! 🌸' },
             { image: './image/Birthday!/photo4.jpg', content: 'Your kindness and warmth touch hearts! 💖' },
@@ -462,16 +462,16 @@ function populateModal() {
 
     // Sử dụng colorTheme đã lưu thay vì detect
     const currentTheme = settings.colorTheme || detectCurrentColorTheme();
-    
+
     // Thêm event listener cho các nút màu
     const colorButtons = document.querySelectorAll('.color-theme-btn');
     colorButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const theme = this.getAttribute('data-theme');
             handleColorThemeChange(theme);
         });
     });
-    
+
     // Khởi tạo với mẫu màu hiện tại
     handleColorThemeChange(currentTheme);
 
@@ -507,11 +507,11 @@ function populateModal() {
 
         // Tạo tiêu đề
         const title = document.createElement('h3');
-if (index === 0) {
-    title.textContent = t('pageTitleCover', {num: index + 1});
-} else {
-    title.textContent = t('pageTitle', {num: index + 1});
-}
+        if (index === 0) {
+            title.textContent = t('pageTitleCover', { num: index + 1 });
+        } else {
+            title.textContent = t('pageTitle', { num: index + 1 });
+        }
         pageConfig.appendChild(title);
 
         // Create close button (only shown when deletion is possible)
@@ -556,7 +556,7 @@ if (index === 0) {
             imagePreview.alt = `Page ${index + 1} Image`;
         } else {
             // Hiển thị placeholder
-            const placeholderText = index === 0 ? t('coverPlaceholder') : t('pagePlaceholder', {num: index + 1});
+            const placeholderText = index === 0 ? t('coverPlaceholder') : t('pagePlaceholder', { num: index + 1 });
             imagePreview.style.cssText += `
                 display: flex;
                 justify-content: center;
@@ -569,7 +569,7 @@ if (index === 0) {
                 text-align: center;
             `;
             imagePreview.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9Ijc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gaW1hZ2U8L3RleHQ+PC9zdmc+';
-            imagePreview.alt = t('noImageAlt', {placeholder: placeholderText});
+            imagePreview.alt = t('noImageAlt', { placeholder: placeholderText });
         }
 
         pageConfig.appendChild(imagePreview);
@@ -618,7 +618,7 @@ if (index === 0) {
                     imagePreview.alt = `Current image for page ${index + 1}`;
                 } else {
                     // Hiển thị placeholder
-                    const placeholderText = index === 0 ? t('coverPlaceholder') : t('pagePlaceholder', {num: index + 1});
+                    const placeholderText = index === 0 ? t('coverPlaceholder') : t('pagePlaceholder', { num: index + 1 });
                     imagePreview.style.cssText += `
                         display: flex;
                         justify-content: center;
@@ -631,18 +631,18 @@ if (index === 0) {
                         text-align: center;
                     `;
                     imagePreview.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2YwZjBmMCIvPjx0ZXh0IHg9Ijc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gaW1hZ2U8L3RleHQ+PC9zdmc+';
-                    imagePreview.alt = t('noImageAlt', {placeholder: placeholderText});
+                    imagePreview.alt = t('noImageAlt', { placeholder: placeholderText });
                 }
             }
         });
 
         // Only create textareas for odd pages starting from page 3 (index 2, 4, 6, 8...)
         if (index >= 2 && index % 2 === 0) {
-          
+
 
             const contentTextarea = document.createElement('textarea');
             contentTextarea.id = `pageContent${index}`;
-            contentTextarea.placeholder = t('contentPlaceholder', {num: index + 1});
+            contentTextarea.placeholder = t('contentPlaceholder', { num: index + 1 });
             contentTextarea.rows = 4;
             contentTextarea.value = page.content || '';
             pageConfig.appendChild(contentTextarea);
@@ -788,19 +788,19 @@ function handleColorThemeChange(selectedTheme) {
     const sequenceColorInput = document.getElementById('sequenceColor');
     const customColorSection = document.getElementById('customColorSection');
     const sequenceColorSection = document.getElementById('sequenceColorSection');
-    
+
     // Save the selected theme to settings
     settings.colorTheme = selectedTheme;
-    
+
     // Update the active state of the buttons
     const allButtons = document.querySelectorAll('.color-theme-btn');
     allButtons.forEach(btn => btn.classList.remove('active'));
-    
+
     const activeButton = document.querySelector(`[data-theme="${selectedTheme}"]`);
     if (activeButton) {
         activeButton.classList.add('active');
     }
-    
+
     // Show/hide the custom color section
     if (selectedTheme === 'custom') {
         customColorSection.style.display = 'flex';
@@ -808,19 +808,19 @@ function handleColorThemeChange(selectedTheme) {
     } else {
         customColorSection.style.display = 'none';
         sequenceColorSection.style.display = 'none';
-        
+
         // Only update colors if not custom
         const theme = colorThemes[selectedTheme];
         if (theme && matrixColor1Input && matrixColor2Input && sequenceColorInput) {
             matrixColor1Input.value = theme.matrixColor1;
             matrixColor2Input.value = theme.matrixColor2;
             sequenceColorInput.value = theme.sequenceColor;
-            
+
             // Update settings with new colors
             settings.matrixColor1 = theme.matrixColor1;
             settings.matrixColor2 = theme.matrixColor2;
             settings.sequenceColor = theme.sequenceColor;
-            
+
             // Trigger change event to update preview if available
             matrixColor1Input.dispatchEvent(new Event('input'));
             matrixColor2Input.dispatchEvent(new Event('input'));
@@ -837,13 +837,13 @@ function addCustomColorListeners() {
     const matrixColor1Input = document.getElementById('matrixColor1');
     const matrixColor2Input = document.getElementById('matrixColor2');
     const sequenceColorInput = document.getElementById('sequenceColor');
-    
+
     if (matrixColor1Input) {
-        matrixColor1Input.addEventListener('input', function() {
+        matrixColor1Input.addEventListener('input', function () {
             // Only update settings when in custom mode
             if (settings.colorTheme === 'custom') {
                 settings.matrixColor1 = this.value;
-                
+
                 // Update preview if available
                 const matrixColor1Preview = document.getElementById('matrixColor1Preview');
                 if (matrixColor1Preview) {
@@ -852,12 +852,12 @@ function addCustomColorListeners() {
             }
         });
     }
-    
+
     if (matrixColor2Input) {
-        matrixColor2Input.addEventListener('input', function() {
+        matrixColor2Input.addEventListener('input', function () {
             if (settings.colorTheme === 'custom') {
                 settings.matrixColor2 = this.value;
-                
+
                 const matrixColor2Preview = document.getElementById('matrixColor2Preview');
                 if (matrixColor2Preview) {
                     matrixColor2Preview.style.backgroundColor = this.value;
@@ -865,12 +865,12 @@ function addCustomColorListeners() {
             }
         });
     }
-    
+
     if (sequenceColorInput) {
-        sequenceColorInput.addEventListener('input', function() {
+        sequenceColorInput.addEventListener('input', function () {
             if (settings.colorTheme === 'custom') {
                 settings.sequenceColor = this.value;
-                
+
                 const sequenceColorPreview = document.getElementById('sequenceColorPreview');
                 if (sequenceColorPreview) {
                     sequenceColorPreview.style.backgroundColor = this.value;
@@ -886,26 +886,26 @@ function detectCurrentColorTheme() {
     if (settings.colorTheme) {
         return settings.colorTheme;
     }
-    
+
     const matrixColor1Input = document.getElementById('matrixColor1');
     const matrixColor2Input = document.getElementById('matrixColor2');
     const sequenceColorInput = document.getElementById('sequenceColor');
-    
+
     if (matrixColor1Input && matrixColor2Input && sequenceColorInput) {
         const currentMatrix1 = matrixColor1Input.value;
         const currentMatrix2 = matrixColor2Input.value;
         const currentSequence = sequenceColorInput.value;
-        
+
         // Find the most suitable color theme (including custom)
         for (const [themeKey, theme] of Object.entries(colorThemes)) {
-            if (theme.matrixColor1 === currentMatrix1 && 
-                theme.matrixColor2 === currentMatrix2 && 
+            if (theme.matrixColor1 === currentMatrix1 &&
+                theme.matrixColor2 === currentMatrix2 &&
                 theme.sequenceColor === currentSequence) {
                 return themeKey;
             }
         }
     }
-    
+
     // Default to 'pink' if not found
     return 'pink';
 }
@@ -992,7 +992,7 @@ function updateExpireDateDisplay() {
     const isSaveCheckbox = document.getElementById('isSave');
     const expireDateElement = document.getElementById('expireDate');
     const expireContainer = expireDateElement?.parentElement;
-    
+
     if (isSaveCheckbox && expireDateElement && expireContainer) {
         if (isSaveCheckbox.checked) {
             expireDateElement.textContent = t('saveForever');
@@ -1034,7 +1034,7 @@ function createPages() {
                     this.src = createPlaceholderImage(placeholderText);
                 };
                 front.appendChild(frontImg);
-                
+
                 // Add text overlay if content exists
                 if (frontPageData.content) {
                     const textDiv = document.createElement('div');
@@ -1051,11 +1051,11 @@ function createPages() {
                 front.appendChild(textDiv);
             } else {
                 front.classList.add('empty-page');
-               front.textContent = t('emptyPage');
+                front.textContent = t('emptyPage');
             }
         } else {
             front.classList.add('empty-page');
-           front.textContent = t('emptyPage');
+            front.textContent = t('emptyPage');
         }
 
         const back = document.createElement('div');
@@ -1072,7 +1072,7 @@ function createPages() {
                     this.src = createPlaceholderImage(placeholderText);
                 };
                 back.appendChild(backImg);
-                
+
                 // Add text overlay if content exists
                 if (backPageData.content) {
                     const textDiv = document.createElement('div');
@@ -1096,7 +1096,7 @@ function createPages() {
             endImg.src = './image/theend.jpg';
             endImg.onerror = function () {
                 back.classList.add('empty-page');
-               back.textContent = t('endOfBook');
+                back.textContent = t('endOfBook');
             };
             back.appendChild(endImg);
         }
@@ -1120,7 +1120,7 @@ function createPages() {
     }
 
     photoUrls = pages.filter(page => page.image).map(page => page.image);
-    
+
     // ✅ FIX: Calculate z-index for all pages after creation
     if (typeof calculatePageZIndexes === 'function') {
         calculatePageZIndexes();
@@ -1165,8 +1165,8 @@ document.addEventListener('DOMContentLoaded', function () {
 function createLoadingUI() {
     const loadingOverlay = document.createElement('div');
     loadingOverlay.id = 'loadingOverlay';
- 
-loadingOverlay.innerHTML = `
+
+    loadingOverlay.innerHTML = `
     <div class="loading-content">
         <div class="loading-spinner"></div>
         <h2>${t('loading')}</h2>
@@ -1285,11 +1285,11 @@ async function loadWebsiteFromServer() {
         pricingContainer.style.display = 'none';
     }
 
-//     // Hide the language switch button here
-const languageSwitchBtn = document.getElementById('langSwitchBtn');
-if (languageSwitchBtn) {
-    languageSwitchBtn.style.display = 'none';
-}
+    //     // Hide the language switch button here
+    const languageSwitchBtn = document.getElementById('langSwitchBtn');
+    if (languageSwitchBtn) {
+        languageSwitchBtn.style.display = 'none';
+    }
 
     // Show loading UI
     const loadingOverlay = createLoadingUI();
@@ -1362,14 +1362,14 @@ applySettingsButton.addEventListener('click', () => {
     // Check enableBook first
     const enableBookSelect = document.getElementById('enableBook');
     const isBookEnabled = enableBookSelect ? enableBookSelect.value === 'true' : false;
-    
+
     // Check if book is enabled but has no pages or all pages are empty
     if (isBookEnabled) {
         if (settings.pages.length === 0) {
             alert('❌ Book needs pages!\n\nPlease add at least 1 page to the book or disable the book feature.');
             return;
         }
-        
+
         // // Check if at least one page has an image
         // const hasValidPage = settings.pages.some(page => page.image && page.image.trim() !== '');
         // if (!hasValidPage) {
@@ -1377,12 +1377,12 @@ applySettingsButton.addEventListener('click', () => {
         //     return;
         // }
     }
-    
+
     // Check page logic before applying
     const totalPages = settings.pages.length;
 
     if (totalPages > 1 && totalPages % 2 === 0) {
-        alert(`❌ ${t('invalidPageStructure')}\n\n${t('currentPages', {total: totalPages})}\n${t('bookStructureGuide')}\n\n${t('pleaseAddOrRemovePage')}`);
+        alert(`❌ ${t('invalidPageStructure')}\n\n${t('currentPages', { total: totalPages })}\n${t('bookStructureGuide')}\n\n${t('pleaseAddOrRemovePage')}`);
 
         return;
     }
@@ -1393,10 +1393,10 @@ applySettingsButton.addEventListener('click', () => {
     settings.matrixText = document.getElementById('matrixText').value || 'HAPPYBIRTHDAY';
     settings.matrixColor1 = document.getElementById('matrixColor1').value;
     settings.matrixColor2 = document.getElementById('matrixColor2').value;
-    settings.sequence = document.getElementById('sequenceText').value || 'HAPPY|BIRTHDAY|MY|CUTE|LITTLE|HINATA|❤';
+    settings.sequence = document.getElementById('sequenceText').value || 'HAPPY|BIRTHDAY|MY|CUTE|LITTLE|EMAN|❤';
     settings.sequenceColor = document.getElementById('sequenceColor').value;
     settings.gift = document.getElementById('giftImage').value;
-    
+
     // Save the selected color theme
     const activeButton = document.querySelector('.color-theme-btn.active');
     if (activeButton) {
@@ -1406,7 +1406,7 @@ applySettingsButton.addEventListener('click', () => {
     settings.enableBook = document.getElementById('enableBook').value === 'true';
     settings.enableHeart = document.getElementById('enableHeart').value === 'true';
     settings.isSave = document.getElementById('isSave')?.checked || false;
-    
+
     // Update global state
     window.lastIsSaveState = settings.isSave;
 

@@ -1,9 +1,9 @@
 // WebSocket Configuration
 const SOCKET_CONFIG = {
-  TIMEOUT: 20000,
-  RECONNECTION_ATTEMPTS: 5,
-  RECONNECTION_DELAY: 1000,
-  PAYMENT_TIMEOUT: 300000
+    TIMEOUT: 20000,
+    RECONNECTION_ATTEMPTS: 5,
+    RECONNECTION_DELAY: 1000,
+    PAYMENT_TIMEOUT: 300000
 };
 
 /**
@@ -11,172 +11,172 @@ const SOCKET_CONFIG = {
  * Socket Manager Class - Manage WebSocket connection
  */
 class SocketManager {
-  constructor() {
-    this.socket = null;
-    this.currentOrder = null;
-    this.eventHandlers = new Map();
-    this.isConnected = false;
-  }
-
-  /**
-   * Khởi tạo WebSocket connection
-   * Initialize WebSocket connection
-   */
-  init() {
-    try {
-      this.socket = io(`https://dearlove-backend.onrender.com`, {
-        transports: ['websocket', 'polling'],
-        timeout: SOCKET_CONFIG.TIMEOUT,
-        reconnection: true,
-        reconnectionDelay: SOCKET_CONFIG.RECONNECTION_DELAY,
-        reconnectionAttempts: SOCKET_CONFIG.RECONNECTION_ATTEMPTS
-      });
-
-      this._setupEventListeners();
-      return this.socket;
-    } catch (error) {
-      console.error('WebSocket initialization error:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Thiết lập event listeners
-   * Setup event listeners
-   */
-  _setupEventListeners() {
-    if (!this.socket) return;
-
-    this.socket.on('connect', () => {
-      this.isConnected = true;
-      this._handleReconnection();
-    });
-
-    this.socket.on('disconnect', () => {
-      this.isConnected = false;
-    });
-
-    this.socket.on('connect_error', (error) => {
-      console.error('🔌 WebSocket connection error:', error);
-      this.isConnected = false;
-    });
-  }
-
-  /**
-   * Xử lý kết nối lại khi reconnect
-   * Handle reconnection
-   */
-  _handleReconnection() {
-    const currentOrderCode = localStorage.getItem('current_order_code');
-    const isPaymentInProgress = localStorage.getItem('payment_in_progress') === 'true';
-    
-    if (currentOrderCode && isPaymentInProgress) {
-      this.joinOrder(currentOrderCode);
-    }
-  }
-
-  /**
-   * Join vào room theo dõi order
-   * Join room to track order
-   */
-  joinOrder(orderCode) {
-    if (!this.socket || !this.isConnected) {
-      console.error('❌ Socket chưa kết nối');
-      return false;
+    constructor() {
+        this.socket = null;
+        this.currentOrder = null;
+        this.eventHandlers = new Map();
+        this.isConnected = false;
     }
 
-    // Leave room cũ nếu có
-    // Leave old room if any
-    if (this.currentOrder && this.currentOrder !== orderCode) {
-      this.leaveOrder(this.currentOrder);
+    /**
+     * Khởi tạo WebSocket connection
+     * Initialize WebSocket connection
+     */
+    init() {
+        try {
+            this.socket = io(`https://dearlove-backend.onrender.com`, {
+                transports: ['websocket', 'polling'],
+                timeout: SOCKET_CONFIG.TIMEOUT,
+                reconnection: true,
+                reconnectionDelay: SOCKET_CONFIG.RECONNECTION_DELAY,
+                reconnectionAttempts: SOCKET_CONFIG.RECONNECTION_ATTEMPTS
+            });
+
+            this._setupEventListeners();
+            return this.socket;
+        } catch (error) {
+            console.error('WebSocket initialization error:', error);
+            return null;
+        }
     }
 
-    this.socket.emit('join-order', orderCode);
-    this.currentOrder = orderCode;
-    return true;
-  }
+    /**
+     * Thiết lập event listeners
+     * Setup event listeners
+     */
+    _setupEventListeners() {
+        if (!this.socket) return;
 
-  /**
-   * Leave khỏi room
-   * Leave room
-   */
-  leaveOrder(orderCode) {
-    if (!this.socket || !this.isConnected) return;
+        this.socket.on('connect', () => {
+            this.isConnected = true;
+            this._handleReconnection();
+        });
 
-    this.socket.emit('leave-order', orderCode);
-    if (this.currentOrder === orderCode) {
-      this.currentOrder = null;
+        this.socket.on('disconnect', () => {
+            this.isConnected = false;
+        });
+
+        this.socket.on('connect_error', (error) => {
+            console.error('🔌 WebSocket connection error:', error);
+            this.isConnected = false;
+        });
     }
-  }
 
-  /**
-   * Đăng ký event handler với cleanup
-   * Register event handler with cleanup
-   */
-  on(event, handler) {
-    if (!this.socket) return;
+    /**
+     * Xử lý kết nối lại khi reconnect
+     * Handle reconnection
+     */
+    _handleReconnection() {
+        const currentOrderCode = localStorage.getItem('current_order_code');
+        const isPaymentInProgress = localStorage.getItem('payment_in_progress') === 'true';
 
-    // Lưu handler để có thể remove sau
-    // Save handler to remove later
-    if (!this.eventHandlers.has(event)) {
-      this.eventHandlers.set(event, []);
+        if (currentOrderCode && isPaymentInProgress) {
+            this.joinOrder(currentOrderCode);
+        }
     }
-    this.eventHandlers.get(event).push(handler);
 
-    this.socket.on(event, handler);
-  }
+    /**
+     * Join vào room theo dõi order
+     * Join room to track order
+     */
+    joinOrder(orderCode) {
+        if (!this.socket || !this.isConnected) {
+            console.error('❌ Socket chưa kết nối');
+            return false;
+        }
 
-  /**
-   * Remove event handler
-   */
-  off(event, handler) {
-    if (!this.socket) return;
+        // Leave room cũ nếu có
+        // Leave old room if any
+        if (this.currentOrder && this.currentOrder !== orderCode) {
+            this.leaveOrder(this.currentOrder);
+        }
 
-    this.socket.off(event, handler);
-    
-    if (this.eventHandlers.has(event)) {
-      const handlers = this.eventHandlers.get(event);
-      const index = handlers.indexOf(handler);
-      if (index > -1) {
-        handlers.splice(index, 1);
-      }
+        this.socket.emit('join-order', orderCode);
+        this.currentOrder = orderCode;
+        return true;
     }
-  }
 
-  /**
-   * Cleanup tất cả event handlers
-   * Cleanup all event handlers
-   */
-  cleanup() {
-    if (!this.socket) return;
+    /**
+     * Leave khỏi room
+     * Leave room
+     */
+    leaveOrder(orderCode) {
+        if (!this.socket || !this.isConnected) return;
 
-    // Remove tất cả event handlers
-    // Remove all event handlers
-    for (const [event, handlers] of this.eventHandlers) {
-      handlers.forEach(handler => {
+        this.socket.emit('leave-order', orderCode);
+        if (this.currentOrder === orderCode) {
+            this.currentOrder = null;
+        }
+    }
+
+    /**
+     * Đăng ký event handler với cleanup
+     * Register event handler with cleanup
+     */
+    on(event, handler) {
+        if (!this.socket) return;
+
+        // Lưu handler để có thể remove sau
+        // Save handler to remove later
+        if (!this.eventHandlers.has(event)) {
+            this.eventHandlers.set(event, []);
+        }
+        this.eventHandlers.get(event).push(handler);
+
+        this.socket.on(event, handler);
+    }
+
+    /**
+     * Remove event handler
+     */
+    off(event, handler) {
+        if (!this.socket) return;
+
         this.socket.off(event, handler);
-      });
+
+        if (this.eventHandlers.has(event)) {
+            const handlers = this.eventHandlers.get(event);
+            const index = handlers.indexOf(handler);
+            if (index > -1) {
+                handlers.splice(index, 1);
+            }
+        }
     }
-    this.eventHandlers.clear();
 
-    // Leave current order
-    if (this.currentOrder) {
-      this.leaveOrder(this.currentOrder);
+    /**
+     * Cleanup tất cả event handlers
+     * Cleanup all event handlers
+     */
+    cleanup() {
+        if (!this.socket) return;
+
+        // Remove tất cả event handlers
+        // Remove all event handlers
+        for (const [event, handlers] of this.eventHandlers) {
+            handlers.forEach(handler => {
+                this.socket.off(event, handler);
+            });
+        }
+        this.eventHandlers.clear();
+
+        // Leave current order
+        if (this.currentOrder) {
+            this.leaveOrder(this.currentOrder);
+        }
+
+        this.socket.disconnect();
+        this.socket = null;
+        this.currentOrder = null;
+        this.isConnected = false;
     }
 
-    this.socket.disconnect();
-    this.socket = null;
-    this.currentOrder = null;
-    this.isConnected = false;
-  }
-
-  /**
-   * Kiểm tra trạng thái kết nối
-   * Check connection status
-   */
-  isSocketConnected() {
-    return this.socket && this.isConnected;
-  }
+    /**
+     * Kiểm tra trạng thái kết nối
+     * Check connection status
+     */
+    isSocketConnected() {
+        return this.socket && this.isConnected;
+    }
 }
 
 // Tạo instance global
@@ -188,33 +188,33 @@ const socketManager = new SocketManager();
  * Initialize WebSocket connection
  */
 function initWebSocket() {
-  const socket = socketManager.init();
-  
-  // Lưu reference cho backward compatibility
-  // Save reference for backward compatibility
-  window.socket = socketManager.socket;
-  
-  return socket;
+    const socket = socketManager.init();
+
+    // Lưu reference cho backward compatibility
+    // Save reference for backward compatibility
+    window.socket = socketManager.socket;
+
+    return socket;
 }
 
 /**
  * Cleanup payment state
  */
 function cleanupPaymentState(orderCode, showError = false) {
-  localStorage.removeItem('payment_in_progress');
-  localStorage.removeItem('current_order_code');
-  
-  if (socketManager.currentOrder === orderCode) {
-    socketManager.leaveOrder(orderCode);
-  }
+    localStorage.removeItem('payment_in_progress');
+    localStorage.removeItem('current_order_code');
+
+    if (socketManager.currentOrder === orderCode) {
+        socketManager.leaveOrder(orderCode);
+    }
 }
 
 // Khai báo global types để tránh TypeScript errors
 // Declare global types to avoid TypeScript errors
 if (typeof window !== 'undefined') {
-  window.socketManager = socketManager;
-  window.initWebSocket = initWebSocket;
-  window.cleanupPaymentState = cleanupPaymentState;
+    window.socketManager = socketManager;
+    window.initWebSocket = initWebSocket;
+    window.cleanupPaymentState = cleanupPaymentState;
 }
 
 class PricingCalculator {
@@ -551,7 +551,7 @@ class PricingCalculator {
             if (updateTimeout) {
                 clearTimeout(updateTimeout);
             }
-            
+
             // Set new timeout to update pricing after 100ms delay
             updateTimeout = setTimeout(() => {
                 this.updatePricing();
@@ -561,17 +561,17 @@ class PricingCalculator {
         // Add click event listeners to containers
         paymentMethodContainers.forEach((container, index) => {
             const radio = paymentMethodRadios[index];
-            
+
             // Click handler for container
             container.addEventListener('click', (e) => {
                 // Prevent double-triggering if clicking on radio or label
                 if (e.target.type === 'radio' || e.target.tagName === 'LABEL') {
                     return;
                 }
-                
+
                 // Set the radio as checked
                 radio.checked = true;
-                
+
                 // Update visual state and pricing
                 updateVisualState();
                 updatePricingWithDebounce();
@@ -847,19 +847,19 @@ class PricingCalculator {
         const paymentMethodSection = document.getElementById('paymentMethodSection');
 
         if (!pricingDetails || !totalPrice || !actionButton) return;
-        
+
         // Update tip if needed
         if (tipInput) {
             settingsToUse.tip = parseInt(tipInput.value) || 0;
         }
-        
+
         // Lấy payment method hiện tại
         // Get current payment method
         const selectedPaymentMethod = this.getSelectedPaymentMethod();
-        
+
         // Cache pricing calculation
         const pricing = this.calculatePrice(settingsToUse);
-        
+
         // Cập nhật chi tiết giá
         // Update price details
         if (pricing.items.length === 0) {
@@ -885,22 +885,22 @@ class PricingCalculator {
         // Cập nhật tổng giá (sử dụng finalPrice nếu có voucher)
         // Update total price (use finalPrice if voucher is available)
         const finalPrice = pricing.finalPrice !== undefined ? pricing.finalPrice : pricing.total;
-        
+
         // Hiển thị giá tiền theo payment method
         // Display price by payment method
         const paypalNotice = document.getElementById('paypalNotice');
-        
-                        if (selectedPaymentMethod === 'PAYPAL' && finalPrice > 0) {
-                    // PayPal: Tính tổng tiền bao gồm tip (base $5 + tip trực tiếp như USD)
-                    // PayPal: Calculate total amount including tip (base $5 + direct tip as USD)
-                    const basePayPalAmount = 5; // Base amount for PayPal
-                    const tipAmount = settingsToUse.tip ? parseInt(settingsToUse.tip) : 0;
-                    const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Tip trực tiếp như USD, không cần chuyển đổi
-                    const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Direct tip as USD, no conversion needed
-                    const totalPayPalAmount = basePayPalAmount + tipInUSD;
-                    
-                    totalPrice.textContent = this.formatPriceUSD(totalPayPalAmount);
-            
+
+        if (selectedPaymentMethod === 'PAYPAL' && finalPrice > 0) {
+            // PayPal: Tính tổng tiền bao gồm tip (base $5 + tip trực tiếp như USD)
+            // PayPal: Calculate total amount including tip (base $5 + direct tip as USD)
+            const basePayPalAmount = 5; // Base amount for PayPal
+            const tipAmount = settingsToUse.tip ? parseInt(settingsToUse.tip) : 0;
+            const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Tip trực tiếp như USD, không cần chuyển đổi
+            const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Direct tip as USD, no conversion needed
+            const totalPayPalAmount = basePayPalAmount + tipInUSD;
+
+            totalPrice.textContent = this.formatPriceUSD(totalPayPalAmount);
+
             // Xóa thông báo PayPal nếu có (không cần nữa vì đã hiển thị trong totalPrice)
             // Remove PayPal notice if any (no longer needed as it's shown in totalPrice)
             if (paypalNotice) {
@@ -910,7 +910,7 @@ class PricingCalculator {
             // PayOS: Hiển thị giá VND
             // PayOS: Display VND price
             totalPrice.textContent = this.formatPrice(finalPrice);
-            
+
             // Xóa thông báo PayPal nếu có
             // Remove PayPal notice if any
             if (paypalNotice) {
@@ -926,7 +926,7 @@ class PricingCalculator {
         background: linear-gradient(135deg, #ff9800, #ffc107);
         color: white;
     `;
-            
+
             // Hiển thị section phương thức thanh toán khi có giá tiền
             // Show payment method section when there is a price
             if (paymentMethodSection) {
@@ -947,7 +947,7 @@ class PricingCalculator {
         background: linear-gradient(135deg, #4caf50, #66bb6a);
         color: white;
     `;
-            
+
             // Ẩn section phương thức thanh toán khi miễn phí
             // Hide payment method section when free
             if (paymentMethodSection) {
@@ -1126,13 +1126,13 @@ class PricingCalculator {
             // Lấy settings
             // Get settings
             let settingsToUse = this.getCurrentSettingsFromModal() || window.settings || this.defaultSettings;
-            
+
             // Ưu tiên sử dụng trạng thái checkbox đã lưu
             // Prioritize using saved checkbox state
             if (window.lastIsSaveState !== undefined) {
                 settingsToUse.isSave = window.lastIsSaveState;
             }
-        
+
             // Validate trang sách
             // Validate book pages
             if (settingsToUse.enableBook) {
@@ -1233,14 +1233,14 @@ class PricingCalculator {
     // Chuẩn bị settings hoàn chỉnh
     // Prepare complete settings
     prepareCompleteSettings(settingsToUse) {
-    
+
         const completeSettings = {
             music: settingsToUse.music || './music/happybirtday_uia.mp3',
             countdown: settingsToUse.countdown || 3,
             matrixText: settingsToUse.matrixText || 'HAPPYBIRTHDAY',
             matrixColor1: settingsToUse.matrixColor1 || '#ffb6c1',
             matrixColor2: settingsToUse.matrixColor2 || '#ffc0cb',
-            sequence: settingsToUse.sequence || 'HAPPY|BIRTHDAY|MY|CUTE|LITTLE|HINATA|❤',
+            sequence: settingsToUse.sequence || 'HAPPY|BIRTHDAY|MY|CUTE|LITTLE|EMAN|❤',
             sequenceColor: settingsToUse.sequenceColor || '#d39b9b',
             gift: settingsToUse.gift || '',
             enableBook: settingsToUse.enableBook !== undefined ? settingsToUse.enableBook : false,
@@ -1248,7 +1248,7 @@ class PricingCalculator {
             isSave: settingsToUse.isSave !== undefined ? settingsToUse.isSave : false,
             pages: settingsToUse.pages || []
         };
-        
+
         return completeSettings;
     }
 
@@ -1332,15 +1332,15 @@ class PricingCalculator {
 
             // Tính toán amount cho PayPal bao gồm tip
             // Calculate amount for PayPal including tip
-                            let finalAmount = amount;
-                if (paymentMethod === 'PAYPAL') {
-                    const basePayPalAmount = 5; // Base amount for PayPal
-                    const tipInput = document.getElementById('tipAmount');
-                    const tipAmount = tipInput ? (parseInt(tipInput.value) || 0) : 0;
-                    const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Tip trực tiếp như USD, không cần chuyển đổi
-                    const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Direct tip as USD, no conversion needed
-                    finalAmount = basePayPalAmount + tipInUSD;
-                }
+            let finalAmount = amount;
+            if (paymentMethod === 'PAYPAL') {
+                const basePayPalAmount = 5; // Base amount for PayPal
+                const tipInput = document.getElementById('tipAmount');
+                const tipAmount = tipInput ? (parseInt(tipInput.value) || 0) : 0;
+                const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Tip trực tiếp như USD, không cần chuyển đổi
+                const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Direct tip as USD, no conversion needed
+                finalAmount = basePayPalAmount + tipInUSD;
+            }
 
             const paymentData = {
                 amount: finalAmount,
@@ -1365,21 +1365,21 @@ class PricingCalculator {
             });
 
             const paymentResult = await paymentRes.json();
-            
+
             // Xử lý đơn cũ - cập nhật orderCode nếu backend trả về đơn cũ
             // Handle old order - update orderCode if backend returns old order
             if (paymentResult.data?.isExistingOrder && paymentResult.data?.orderCode) {
                 const oldOrderCode = paymentResult.data.orderCode;
-                
+
                 // Cập nhật orderCode trong localStorage
                 // Update orderCode in localStorage
                 localStorage.setItem('current_order_code', oldOrderCode);
-                
+
                 // Cập nhật orderCode để sử dụng cho WebSocket
                 // Update orderCode to use for WebSocket
                 orderCode = oldOrderCode;
             }
-            
+
             // Xử lý response theo paymentMethod
             // Handle response by paymentMethod
             let checkoutUrl = '';
@@ -1392,7 +1392,7 @@ class PricingCalculator {
                 // PayOS returns checkoutUrl directly
                 checkoutUrl = paymentResult.data?.checkoutUrl || paymentResult.checkoutUrl;
             }
-            
+
             if (!checkoutUrl) {
                 throw new Error('Did not receive payment URL');
             }
@@ -1462,7 +1462,7 @@ class PricingCalculator {
         // Lấy orderCode từ localStorage hoặc tạo mới
         // Get orderCode from localStorage or create new
         const orderCode = localStorage.getItem('current_order_code') || this.generateOrderCode();
-        
+
         // Set flag đang trong quá trình thanh toán
         // Set flag currently processing payment
         localStorage.setItem('payment_in_progress', 'true');
@@ -1473,7 +1473,7 @@ class PricingCalculator {
         return new Promise((resolve, reject) => {
             let iframeLoaded = false;
             let wsMessageReceived = false;
-            
+
             // Hàm kiểm tra và xử lý kết quả
             // Function to check and process result
             const checkAndProcessResult = () => {
@@ -1482,28 +1482,28 @@ class PricingCalculator {
                     // Both iframe and WebSocket are ready
                 }
             };
-            
+
             // Set iframe events cho PAYOS
             iframe.onload = () => {
                 iframeLoaded = true;
                 checkAndProcessResult();
             };
-            
+
             iframe.onerror = () => {
             };
-            
+
             iframe.onbeforeunload = () => {
             };
-            
+
             // Lắng nghe WebSocket event cho PAYOS
             // Listen to WebSocket event for PAYOS
             if (window.socketManager && window.socketManager.isSocketConnected()) {
                 window.socketManager.joinOrder(orderCode);
-                
+
                 const paymentStatusHandler = (data) => {
                     if (String(data.orderCode) === String(orderCode)) {
                         wsMessageReceived = true;
-                        
+
                         if (data.status === 'PAID') {
                             window.cleanupPaymentState(orderCode, false);
                             paymentModal.style.display = 'none';
@@ -1528,13 +1528,13 @@ class PricingCalculator {
                     } else {
                     }
                 };
-                
+
                 window.socketManager.on('payment_status_update', paymentStatusHandler);
             } else {
                 console.error('❌ WebSocket chưa được khởi tạo!');
                 reject(new Error('WebSocket connection error!'));
             }
-            
+
             // Fallback: Timeout sau 5 phút
             // Fallback: Timeout after 5 minutes
             setTimeout(() => {
@@ -1550,11 +1550,11 @@ class PricingCalculator {
     showPayPalPayment(checkoutUrl, websiteId, amount) {
         // PayPal: Điều hướng trực tiếp thay vì popup
         // PayPal: Redirect directly instead of popup
-        
+
         // Lấy orderCode từ localStorage hoặc tạo mới
         // Get orderCode from localStorage or create new
         const orderCode = localStorage.getItem('current_order_code') || this.generateOrderCode();
-        
+
         // Set flag đang trong quá trình thanh toán
         // Set flag currently processing payment
         localStorage.setItem('payment_in_progress', 'true');
@@ -1566,7 +1566,7 @@ class PricingCalculator {
             if (window.socketManager.currentOrder) {
                 window.socketManager.leaveOrder(window.socketManager.currentOrder);
             }
-            
+
             // Cleanup tất cả event handlers
             // Cleanup all event handlers
             window.socketManager.cleanup();
@@ -1582,24 +1582,24 @@ class PricingCalculator {
 
     showSuccessResult(websiteId, price) {
         const shareableURL = window.birthdayAPI.createShareableURL(websiteId);
-        
+
         // Lấy payment method để hiển thị đúng đơn vị tiền tệ
         // Get payment method to display correct currency
         const selectedPaymentMethod = this.getSelectedPaymentMethod();
         let priceText;
-        
+
         if (price > 0) {
-                                if (selectedPaymentMethod === 'PAYPAL') {
-                        // PayPal: Tính tổng tiền bao gồm tip (base $5 + tip trực tiếp như USD)
-                        // PayPal: Calculate total amount including tip (base $5 + direct tip as USD)
-                        const basePayPalAmount = 5; // Base amount for PayPal
-                        const tipInput = document.getElementById('tipAmount');
-                        const tipAmount = tipInput ? (parseInt(tipInput.value) || 0) : 0;
-                        const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Tip trực tiếp như USD, không cần chuyển đổi
-                        const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Direct tip as USD, no conversion needed
-                        const totalPayPalAmount = basePayPalAmount + tipInUSD;
-                        priceText = `<span style="color:#6c63ff;font-weight:bold;">${this.formatPriceUSD(totalPayPalAmount)}</span>`;
-                    } else {
+            if (selectedPaymentMethod === 'PAYPAL') {
+                // PayPal: Tính tổng tiền bao gồm tip (base $5 + tip trực tiếp như USD)
+                // PayPal: Calculate total amount including tip (base $5 + direct tip as USD)
+                const basePayPalAmount = 5; // Base amount for PayPal
+                const tipInput = document.getElementById('tipAmount');
+                const tipAmount = tipInput ? (parseInt(tipInput.value) || 0) : 0;
+                const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Tip trực tiếp như USD, không cần chuyển đổi
+                const tipInUSD = tipAmount > 0 ? tipAmount : 0; // Direct tip as USD, no conversion needed
+                const totalPayPalAmount = basePayPalAmount + tipInUSD;
+                priceText = `<span style="color:#6c63ff;font-weight:bold;">${this.formatPriceUSD(totalPayPalAmount)}</span>`;
+            } else {
                 // PayOS: Hiển thị giá VND
                 priceText = `<span style="color:#6c63ff;font-weight:bold;">${price.toLocaleString()} VNĐ</span>`;
             }
@@ -1785,14 +1785,14 @@ class PricingCalculator {
             // Get settings from modal form (even if modal is closed)
             const isSaveElement = document.getElementById('isSave');
             const isSaveValue = isSaveElement?.checked || window.lastIsSaveState || false;
-            
+
             const modalSettings = {
                 music: document.getElementById('backgroundMusic')?.value || './music/happybirtday_uia.mp3',
                 countdown: parseInt(document.getElementById('countdownTime')?.value) || 3,
                 matrixText: document.getElementById('matrixText')?.value || 'HAPPYBIRTHDAY',
                 matrixColor1: document.getElementById('matrixColor1')?.value || '#ffb6c1',
                 matrixColor2: document.getElementById('matrixColor2')?.value || '#ffc0cb',
-                sequence: document.getElementById('sequenceText')?.value || 'HAPPY|BIRTHDAY|MY|CUTE|LITTLE|HINATA|❤',
+                sequence: document.getElementById('sequenceText')?.value || 'HAPPY|BIRTHDAY|MY|CUTE|LITTLE|EMAN|❤',
                 sequenceColor: document.getElementById('sequenceColor')?.value || '#d39b9b',
                 gift: document.getElementById('giftImage')?.value || '',
                 enableBook: document.getElementById('enableBook')?.value === 'true',
@@ -2033,41 +2033,41 @@ window.initializePricingCalculator = initializePricingCalculator;
 
 // Ẩn settings hint sau 3 giây
 // Hide settings hint after 3 seconds
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const settingsHint = document.getElementById('settingsHint');
     if (settingsHint) {
         setTimeout(() => {
             settingsHint.style.display = 'none';
         }, 3000);
     }
-    
+
     // Khởi tạo WebSocket connection
     // Initialize WebSocket connection
     if (window.initWebSocket) {
         window.initWebSocket();
-        
+
         // Kiểm tra và tự động join lại order room nếu có payment đang pending
         // Check and auto rejoin order room if payment is pending
         const currentOrderCode = localStorage.getItem('current_order_code');
         const isPaymentInProgress = localStorage.getItem('payment_in_progress') === 'true';
-        
+
         if (currentOrderCode && isPaymentInProgress && window.socketManager) {
-            
+
             // Đợi WebSocket kết nối xong rồi mới join
             // Wait for WebSocket connection before joining
             setTimeout(() => {
                 if (window.socketManager.isSocketConnected()) {
                     window.socketManager.joinOrder(currentOrderCode);
-                    
+
                     // Đăng ký listener cho payment status update
                     // Register listener for payment status update
                     window.socketManager.on('payment_status_update', (data) => {
-                        
+
                         if (data.status === 'PAID' && data.orderCode === currentOrderCode) {
-                            
+
                             // Cleanup payment state
                             window.cleanupPaymentState(currentOrderCode);
-                            
+
                             // Hiển thị kết quả thành công
                             // Show success result
                             if (window.pricingCalculator) {
